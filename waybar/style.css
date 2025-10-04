@@ -1,0 +1,47 @@
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: ComicShannsMono Nerd Font;
+    font-size: 15px;
+    min-height: 0;
+}
+
+#waybar {
+	background-color: #282828;
+}
+
+#custom-date, #clock, #battery, #bluetooth, #pulseaudio, #tray, #network, #language, #backlight {
+	padding: 5px 10px;
+	margin: 5px 0px;
+	color: #282828;
+    background-color: #d79921;
+}
+
+#custom-weather{
+    color: #ebdbb2;
+}
+
+#hyprland-window{
+    color: #ebdbb2;
+	padding: 5px 10px;
+	margin: 5px 0px;
+}
+
+#custom-power {
+	border-radius: 5px;
+	margin-right: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 0px;
+	padding: 5px 10px;
+}
+
+#clock {
+    border-radius: 0px 5px 5px 0px;
+    margin-right: 10px;
+}
+
+#network {
+	border-radius: 5px 0px 0px 5px;
+}
