@@ -74,6 +74,7 @@ end
 -- Use LuaSnip's extend decorator to set opts = { condition = in_math, show_condition = in_math }
 extdec.register(s, {arg_indx=3})
 extdec.register(postfix, {arg_indx=3})
+
 local sm = extdec.apply(s, { condition = in_math, show_condition = in_math })
 local sb = extdec.apply(s, { condition = line_begin })
 
@@ -215,21 +216,20 @@ return {
   sm({ trig = "lra", name = "Left-Right <>" }, fmt([[lr(angle.l {} angle.r) {}]], { d(1, get_visual), i(0) }) ),
   sm({ trig = "lr|", name = "Left-Right ||" }, fmt([[lr(abs( {} )) {}]], { d(1, get_visual), i(0) }) ),
 
-  sm({ trig = "mcal", name = "Calligraphic variant" }, fmt([[cal({}) {}]], { i(1, "L"), i(0) }) ),
-
   -- Decorators: Over and Under
   sm({ trig = "conj", name = "Conjugate" }, fmt([[overline({}){}]], { d(1, get_visual), i(0) }) ),
   sm({ trig = "bar", name = "Over: bar" }, fmt([[overline({}){}]], { d(1, get_visual), i(0) }) ),
 
   -- Operators: Limits, Sums, Integrals, Product
-  sm({ trig = "lim", name = "Limit" }, fmt([[lim_({} -> {}) ]], { i(1, "n"), i(2, "infinity") }) ),
+  -- sm({ trig = "lim", name = "Limit" }, fmt([[lim_({} -> {}) ]], { i(1, "n"), i(2, "infinity") }) ),
+  sm({ trig = "lim", name = "Limit", regTrig=true, }, fmt([[lim_({} -> {}) {}]], { i(1), i(2), i(0) }) ),
 
   sm({ trig = "sum", name = "Summation (Sigma)" },
     fmt(
       [[
       sum_(n={})^({}) {}
       ]],
-      { i(1, "index"), i(2, "infinity"), d(3, get_visual) }
+      { i(1, "index"), i(2, "infinity"), i(3) }
     )
   ),
 
@@ -379,7 +379,34 @@ return {
   -- Easy subscripts
   sm(
     { trig = "(%a)nn", regTrig = true, name = "x_n", dscr = "x_n quick" },
-    fmt([[{} *_n ]], {
+    fmt([[{}_n ]], {
+      f(function(_, snip)
+        return snip.captures[1]
+      end),
+    })
+  ),
+
+  sm(
+    { trig = "(%a)mm", regTrig = true, name = "x_m", dscr = "x_m quick" },
+    fmt([[{}_m ]], {
+      f(function(_, snip)
+        return snip.captures[1]
+      end),
+    })
+  ),
+
+  sm(
+    { trig = "(%a)ii", regTrig = true, name = "x_i", dscr = "x_i quick" },
+    fmt([[{}_i ]], {
+      f(function(_, snip)
+        return snip.captures[1]
+      end),
+    })
+  ),
+
+  sm(
+    { trig = "(%a)jj", regTrig = true, name = "x_j", dscr = "x_j quick" },
+    fmt([[{}_j ]], {
       f(function(_, snip)
         return snip.captures[1]
       end),
@@ -409,7 +436,7 @@ return {
   ),
 
   sm(
-    { trig = "(%a)cal", regTrig = true, name = "mathcal quick", dscr = "Auto cal bold" },
+    { trig = "(%a)cal", regTrig = true, name = "mathcal quick", dscr = "Auto cal" },
     fmt([[cal({})]], {
       f(function(_, snip)
         return snip.captures[1]
@@ -418,7 +445,7 @@ return {
   ),
 
   sm(
-    { trig = "(%a)scr", regTrig = true, name = "scr quick", dscr = "Auto scr bold" },
+    { trig = "(%a)scr", regTrig = true, name = "scr quick", dscr = "Auto scr" },
     fmt([[scr({})]], {
       f(function(_, snip)
         return snip.captures[1]
@@ -427,7 +454,7 @@ return {
   ),
 
   sm(
-    { trig = "(%a)frak", regTrig = true, name = "frak quick", dscr = "Auto frak bold" },
+    { trig = "(%a)frak", regTrig = true, name = "frak quick", dscr = "Auto frak" },
     fmt([[frak({})]], {
       f(function(_, snip)
         return snip.captures[1]
@@ -453,7 +480,7 @@ return {
   ),
 
   sm({ trig = "xx", name = "Cross Product" }, { t("times ") } ),
-  sm({ trig = "..", name = "Dot Product", priority = 100 }, { t("dot ") } ),
+  sm({ trig = "...", name = "Dot Product", priority = 100 }, { t("dots ") } ),
   sm({ trig = "oo", name = "infinity" }, { t("infinity ") } ),
   sm({ trig = "leq", name = "leq" }, { t("<= ") } ),
   sm({ trig = "geq", name = "leq" }, { t(">= ") } ),

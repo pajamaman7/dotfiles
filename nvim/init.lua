@@ -20,87 +20,54 @@ vim.keymap.set('n', '<leader>w', ':write<CR>')
 
 vim.pack.add({
     { src = "https://github.com/ellisonleao/gruvbox.nvim" },
+    { src = "https://github.com/phha/zenburn.nvim" },
+    { src = "https://github.com/szammyboi/dune.nvim" },
+
+    { src = "https://github.com/tpope/vim-surround" },
+
     { src = "https://github.com/neovim/nvim-lspconfig" },
-    { src = "https://github.com/echasnovski/mini.pick" },
+
     { src = "https://github.com/lervag/vimtex" },
+
+    { src = "https://github.com/nvim-telescope/telescope.nvim" },
+    { src = "https://github.com/nvim-lua/plenary.nvim" },
 
     { src = "https://github.com/sirver/ultisnips" },
     { src = "https://github.com/L3MON4D3/LuaSnip" },
-    { src = "https://github.com/kaarmu/typst.vim" },
-    { src = "https://github.com/chomosuke/typst-preview.nvim" },
-    { src = "https://github.com/mason-org/mason.nvim"},
+
+    { src = "https://github.com/mason-org/mason.nvim" },
 
 })
--- Mason setup
---require("mason").setup()
-require 'typst-preview'.setup {}
+-- mason and lsp setup
+require "mason".setup()
+
+vim.lsp.enable({
+    "lua_ls", "cssls", "html-lsp", "quick-lint-js", "pyright", "texlab", "pylint", 
+})
+
+-- Telescope bindings
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>r', builtin.oldfiles, { desc = 'Telescope recents' })
 
 -- Load snippet files for luasnip
 local ls = require("luasnip")
-require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/snippets/"})
+require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/snippets/" })
 
 -- Enable autosnippets
 ls.config.set_config({
-  enable_autosnippets = true,
-  history = true,
-  updateevents = "TextChanged,TextChangedI",
+    enable_autosnippets = true,
+    history = true,
+    updateevents = "TextChanged,TextChangedI",
 })
 
--- Keybindings using Lua
-vim.cmd[[
-" Use Tab to expand and jump through snippets
-imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
-smap <silent><expr> <Tab> luasnip#jumpable(1) ? '<Plug>luasnip-jump-next' : '<Tab>'
-
-" Use Shift-Tab to jump backwards through snippets
-imap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
-smap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+-- snippet keybinds
+vim.cmd [[
+imap <silent><expr> <tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<tab>'
+smap <silent><expr> <tab> luasnip#jumpable(1) ? '<Plug>luasnip-jump-next' : '<tab>'
+imap <silent><expr> <S-tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-tab>'
+smap <silent><expr> <S-tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-tab>'
 ]]
-
--- mini.pick setup
-require "mini.pick".setup()
-vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
-
--- Oldfiles picker setup
-local oldfiles_picker = function()
-    local items = {}
-    local cwd = vim.fn.getcwd()
-    -- Ensure cwd has a trailing slash
-    cwd = cwd:sub(-1) == '/' and cwd or (cwd .. '/')
-
-    for _, path in ipairs(vim.v.oldfiles) do
-        local normal_path = nil
-        if vim.startswith(path, cwd) then
-            -- Use ./ as cwd prefix
-            normal_path = '.'.. path:sub(cwd:len())
-        else
-            -- Use ~ as home directory prefix
-            normal_path = vim.fn.fnamemodify(path, ':~')
-        end
-
-        table.insert(items, normal_path)
-    end
-
-    local selection = require('mini.pick').start({
-        source = {
-            items = items,
-            name = 'Recent Files'
-        }
-    })
-
-    if selection then
-        vim.cmd.edit(vim.trim(selection):match('%s+(.+)'))
-    end
-end
-
--- Key mapping for oldfiles picker
-vim.keymap.set('n', '<leader>r', oldfiles_picker)
-
---lsp setup
-vim.lsp.enable({ 
-    "lua-ls",
-    "typst",
-})
 
 vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
 
@@ -114,15 +81,14 @@ vim.g.vimtex_compiler_latexmk = {
 --viewer and compiler settings
 vim.g.vimtex_view_general_viewer = 'zathura'
 vim.g.vimtex_compiler_method = 'latexmk'
---conceal settings
 vim.g.tex_conceal = 'abdmg'
 
 -- UltiSnips settings
-vim.g.UltiSnipsExpandTrigger="<tab>"
-vim.g.UltiSnipsJumpForwardTrigger="<tab>"
--- vim.g.UltiSnipsJumpBackwardTrigger="<s-tab>"
+vim.g.UltiSnipsExpandTrigger = "<tab>"
+vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
+vim.g.UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
 --visual settings
 vim.cmd("colorscheme gruvbox")
 --disables color of statusline
---vim.cmd(":hi statusline guibg=NONE")
+-- vim.cmd(":hi statusline guibg=NONE")
